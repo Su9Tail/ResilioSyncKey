@@ -15,6 +15,7 @@ class RouteServiceProvider extends ServiceProvider
      * @var string
      */
     protected $namespace = 'App\Http\Controllers';
+    protected $domain = 'homestead.app';
 
     /**
      * Define your route model bindings, pattern filters, etc.
@@ -35,11 +36,17 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function map()
     {
+        $this->refactorDomain();
         $this->mapApiRoutes();
 
         $this->mapWebRoutes();
 
         //
+    }
+
+    protected function refactorDomain()
+    {
+        $this->domain = env('APP_URL');
     }
 
     /**
@@ -52,8 +59,8 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapWebRoutes()
     {
         Route::middleware('web')
-             ->namespace($this->namespace)
-             ->group(base_path('routes/web.php'));
+            ->namespace($this->namespace . '\Web')
+            ->group(base_path('routes/web.php'));
     }
 
     /**
@@ -65,9 +72,9 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapApiRoutes()
     {
-        Route::prefix('api')
-             ->middleware('api')
-             ->namespace($this->namespace)
-             ->group(base_path('routes/api.php'));
+        Route::domain('api.' . $this->domain)
+            ->middleware('api')
+            ->namespace($this->namespace . '\Api')
+            ->group(base_path('routes/api.php'));
     }
 }
